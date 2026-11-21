@@ -1,0 +1,40 @@
+
+name: Render Nuclear Submarine Short
+
+on:
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Extract project ZIP
+        run: |
+          mkdir project
+          unzip nuclear-submarine-project.zip -d project
+          ls -la project/nuclear-submarine-project
+
+      - name: Install dependencies
+        working-directory: project/nuclear-submarine-project
+        run: npm install
+
+      - name: Render video
+        working-directory: project/nuclear-submarine-project
+        run: npm run render
+
+      - name: Upload final MP4
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuclear-submarine-video
+          path: project/nuclear-submarine-project/out/nuclear-submarine.mp4
+          if-no-files-found: error
